@@ -31,6 +31,9 @@ class TweetsAdapter(val tweets: ArrayList<Tweet>) : RecyclerView.Adapter<TweetsA
 
         Glide.with(holder.itemView).load(tweet.user?.publicImageUrl).into(holder.ivProfileImage)
 
+        val formattedTime = TimeFormatter.getTimeDifference(tweet.timeCreated)
+        holder.tvTime.text = formattedTime
+
     }
 
     override fun getItemCount(): Int {
@@ -53,6 +56,7 @@ class TweetsAdapter(val tweets: ArrayList<Tweet>) : RecyclerView.Adapter<TweetsA
         val ivProfileImage = itemView.findViewById<ImageView>(R.id.ivProfileImage)
         val tvUserName = itemView.findViewById<TextView>(R.id.tvUsername)
         val tvTweetBody = itemView.findViewById<TextView>(R.id.tvTweetBody)
+        val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
     }
 
 }
