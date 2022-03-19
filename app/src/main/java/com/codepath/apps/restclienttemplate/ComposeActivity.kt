@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -8,6 +9,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.codepath.apps.restclienttemplate.models.Tweet
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
@@ -17,7 +19,7 @@ class ComposeActivity : AppCompatActivity() {
 
     lateinit var etCompose: EditText
     lateinit var btnTweet: Button
-    lateinit var tvCharCount: EditText
+    lateinit var tvCharCount: TextView
 
     lateinit var client: TwitterClient
 
@@ -27,10 +29,33 @@ class ComposeActivity : AppCompatActivity() {
 
         etCompose = findViewById(R.id.etTweetCompose)
         btnTweet = findViewById(R.id.btnTweet)
-        //tvCharCount = findViewById(R.id.tvCharCount)
+        tvCharCount = findViewById(R.id.tvCharCount)
 
         client = TwitterApplication.getRestClient(this)
 
+        etCompose.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                // Fires right as the text is being changed (even supplies the range of text)
+                tvCharCount.setText(etCompose.length().toString() + "/280")
+                if (etCompose.length() > 280 || etCompose.length() == 0) {
+                    tvCharCount.setTextColor(Color.RED)
+                    btnTweet.isEnabled = false
+                    btnTweet.isClickable = false
+                } else {
+                    tvCharCount.setTextColor(Color.GRAY)
+                    btnTweet.isEnabled = true
+                    btnTweet.isClickable = true
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                // Fires right before text is changing
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                // Fires right after the text has changed
+            }
+        })
 
         btnTweet.setOnClickListener {
             //grab content of edit text
@@ -42,7 +67,7 @@ class ComposeActivity : AppCompatActivity() {
             }
 
             //2. make sure tweet is not too long
-            else if (tweetContent.length > 140) {
+            else if (tweetContent.length > 280) {
                 Toast.makeText(this, "Tweet is too long! Limit is 140 characters.", Toast.LENGTH_SHORT).show()
             }
 
